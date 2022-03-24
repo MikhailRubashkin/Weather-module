@@ -1,0 +1,4 @@
+name = Weather_module
+description = Module for creating custom block
+core = 7.x
+files[] = weather_module.module

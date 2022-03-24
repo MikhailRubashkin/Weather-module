@@ -1,0 +1,46 @@
+<?php
+/**
+ * Implements hook_block_info().
+ */
+function weather_module_block_info() {
+
+  $blocks['weather_module_block'] = array(
+    'info' => t('Weather_module Block'),
+    'description'=>t('This is custom block'),
+    'cache' => DRUPAL_NO_CACHE // this will exclude the block from Drupal cache
+  );
+
+  return $blocks;
+}
+
+/**
+ * This hook generates the contents of the blocks.
+ */
+function weather_module_block_view($block_key) {
+
+// API ключ
+$apiKey = "fe57b721fd47b8600afac45a7829c1ea";
+// Город погода которого нужна
+$city = "Minsk";
+// Ссылка для отправки
+$url = "http://api.openweathermap.org/data/2.5/weather?q=" . $city . "&lang=ru&units=metric&appid=" . $apiKey;
+// Создаём запрос
+$ch = curl_init();
+// Настройка запроса
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_URL, $url);
+// Отправляем запрос и получаем ответ
+$data = json_decode(curl_exec($ch));
+// Закрываем запрос
+curl_close($ch);
+
+  $block = array();
+  if($block_key == 'weather_module_block'){
+  $block['subject'] = t('Weather_module block');
+  $block['content'] = t('<img class="mb-2" src="https://cdn-icons-png.flaticon.com/512/17/17736.png"' . 'alt="" width="20" height="20">' . '<a class="p-2 text-dark">' . $data->name . ' : ' . '<a class="p-2 text-dark">' . $data->main->temp_min  . '°C' . '<br>' 
+  . '<a class="p-2 text-dark">' . '<img class="mb-2" src="https://cdn-icons-png.flaticon.com/512/91/91994.png"' . 'alt="" width="20" height="20">' . "Humidity" . '  '  . '<a class="p-2 text-dark">' .$data->main->humidity  . '%</a>' . ' <br>'
+  . '<a class="p-2 text-dark">' . '<img class="mb-2" src="https://img1.freepng.ru/20180414/pcq/kisspng-computer-icons-wind-symbol-wind-5ad26aa61f9710.6253200915237393021294.jpg"' . 'alt="" width="20" height="20">' . "Wind speed"  . '  ' .  '<a class="p-2 text-dark">' . $data->wind->speed  . 'km/h></a>');
+  //$block['content'] = drupal_add_js('js/twitter.js');
+  }
+  return $block;
+  }
